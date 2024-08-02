@@ -1,14 +1,14 @@
 import { StatusCodes } from "http-status-codes";
 
 import type { Brand } from "@/api/brands/brandModel";
-import { UserRepository } from "@/api/brands/brandRepository";
+import { BrandRepository } from "@/api/brands/brandRepository";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import { logger } from "@/server";
 
 export class BrandService {
-  private brandRepository: UserRepository;
+  private brandRepository: BrandRepository;
 
-  constructor(repository: UserRepository = new UserRepository()) {
+  constructor(repository: BrandRepository = new BrandRepository()) {
     this.brandRepository = repository;
   }
 

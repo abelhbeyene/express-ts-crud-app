@@ -2,7 +2,7 @@ import type { Brand } from "@/api/brands/brandModel";
 
 export const { data: brands }: { data: Brand[] } = require('./brands.json');
 
-export class UserRepository {
+export class BrandRepository {
   async findAllAsync(): Promise<Brand[]> {
     return brands;
   }
