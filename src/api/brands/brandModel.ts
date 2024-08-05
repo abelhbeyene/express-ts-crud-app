@@ -1,5 +1,5 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
+import { string, z } from "zod";
 
 extendZodWithOpenApi(z);
 
@@ -30,7 +30,7 @@ export const BrandSchema = z.object({
     consolidated: z.number(),
     default_location_description_markdown: z.string().optional(),
     products: z.array(z.string().uuid()),
-    consolidated_products: z.array(z.unknown()),
+    consolidated_products: z.array(z.string().uuid()),
     stores: z.array(z.string()),
     logo_url: z.string().url()
 });
@@ -38,4 +38,8 @@ export const BrandSchema = z.object({
 // Input Validation for 'GET /brands/:id' endpoint
 export const GetBrandSchema = z.object({
     params: z.object({ id: BrandSchema.shape.id }),
+});
+
+export const GetStoresByProductIDSchema = z.object({
+    params: z.object({ id: BrandSchema.shape.products.element }),
 });

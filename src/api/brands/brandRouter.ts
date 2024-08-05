@@ -3,9 +3,9 @@ import express, { type Router } from "express";
 import { z } from "zod";
 
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { GetBrandSchema, BrandSchema } from "@/api/brands/brandModel";
+import { GetBrandSchema, BrandSchema, GetStoresByProductIDSchema } from "@/api/brands/brandModel";
 import { validateRequest } from "@/common/utils/httpHandlers";
-import { brandController } from "./brandController";
+import { brandController } from "@/api/brands/brandController";
 
 export const brandRegistry = new OpenAPIRegistry();
 export const brandRouter: Router = express.Router();
@@ -30,3 +30,14 @@ brandRegistry.registerPath({
 });
 
 brandRouter.get("/:id", validateRequest(GetBrandSchema), brandController.getBrand);
+
+
+// TODO: put this in a separate router rather than prefixing it with /brands
+brandRegistry.registerPath({
+  method: "get",
+  path: "/brands/products/{id}/stores",
+  tags: ["Products"],
+  request: { params: GetStoresByProductIDSchema.shape.params },
+  responses: createApiResponse(BrandSchema.shape.stores, "Success"),
+});
+brandRouter.get("/products/:id/stores", validateRequest(GetStoresByProductIDSchema), brandController.getStoresByProductID);

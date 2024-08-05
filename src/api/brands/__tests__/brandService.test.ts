@@ -126,7 +126,7 @@ describe("brandService", () => {
     });
   });
 
-  describe("findById", () => {
+  describe("find brand by Id", () => {
     it("returns a brand for a valid ID", async () => {
       const testId = '5a4e6d14-53d4-4583-bd6b-49f81b021d24';
       const mockBrand = mockBrands.find((brand) => brand.id === testId);
@@ -164,4 +164,46 @@ describe("brandService", () => {
       expect(result.responseObject).toBeNull();
     });
   });
+
+
+  describe("find stores by product Id", () => {
+    it("returns stores for a valid product ID", async () => {
+      const testId = '5a4e6d14-53d4-4583-bd6b-49f81b021d24';
+      const mockStores = mockBrands.find((brand) => brand.id === testId)?.stores;
+      (brandRepositoryInstance.findStoresByProductIDAsync as Mock).mockReturnValue(mockStores);
+
+      const result = await brandServiceInstance.findStoresByProductId(testId);
+
+      expect(result.statusCode).toEqual(StatusCodes.OK);
+      expect(result.success).toBeTruthy();
+      expect(result.message).equals("Stores found");
+      expect(result.responseObject).toEqual(mockStores);
+    })
+  })
+
+  it("handles errors for findStoresByProductIDAsync", async () => {
+    const testId = '5a4e6d14-53d4-4583-bd6b-49f81b021d24';
+    (brandRepositoryInstance.findStoresByProductIDAsync as Mock).mockRejectedValue(new Error("Database error"));
+
+    const result = await brandServiceInstance.findStoresByProductId(testId);
+
+    expect(result.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
+    expect(result.success).toBeFalsy();
+    expect(result.message).equals("An error occurred while finding stores.");
+    expect(result.responseObject).toBeNull();
+  })
+
+  it("deduplicates stores", async () => {
+    const testId = '5a4e6d14-53d4-4583-bd6b-49f81b021d24';
+    const mockStores = mockBrands[0].stores;
+    (brandRepositoryInstance.findStoresByProductIDAsync as Mock).mockReturnValue([...mockStores, ...mockStores]);
+
+    const result = await brandServiceInstance.findStoresByProductId(testId);
+
+    expect(result.statusCode).toEqual(StatusCodes.OK);
+    expect(result.success).toBeTruthy();
+    expect(result.message).equals("Stores found");
+    expect(result.responseObject).toEqual(mockStores);
+  })
+
 });
