@@ -10,9 +10,18 @@ export class BrandService {
   private brandRepository: BrandRepository;
   private cache: NodeCache;
 
-  constructor(repository: BrandRepository = new BrandRepository(), cache: NodeCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })) {
+  constructor(
+    repository: BrandRepository = new BrandRepository(),
+    cache: NodeCache = new NodeCache({ stdTTL: 100, checkperiod: 120 }),
+  ) {
     this.brandRepository = repository;
     this.cache = cache;
+    // Debug
+    // const cb = (key: string, value: any) => {
+    //   console.log(`Key: ${key} set to ${value}`);
+    //   console.log('this.cache.keys();', this.cache.keys());
+    // }
+    // this.cache.on("set", cb)
   }
 
   // Retrieves all brands from the database
@@ -21,7 +30,7 @@ export class BrandService {
       const cacheKey = "all_brands";
 
       const cachedBrands = this.cache.get<Brand[]>(cacheKey);
-      const brands = cachedBrands || await this.brandRepository.findAllAsync();
+      const brands = cachedBrands || (await this.brandRepository.findAllAsync());
 
       if (!cachedBrands) {
         this.cache.set(cacheKey, brands);
@@ -47,7 +56,7 @@ export class BrandService {
     try {
       const cacheKey = `brand_${id}`;
       const cachedBrand = this.cache.get<Brand>(cacheKey);
-      const brand = cachedBrand || await this.brandRepository.findByIdAsync(id);
+      const brand = cachedBrand || (await this.brandRepository.findByIdAsync(id));
 
       if (!cachedBrand) {
         this.cache.set(cacheKey, brand);
@@ -64,49 +73,81 @@ export class BrandService {
     }
   }
 
-  async findProductsByBrandId(id: string): Promise<ServiceResponse<Brand['stores'] | null>> {
+  async findProductsByBrandId(id: string): Promise<ServiceResponse<Brand["stores"] | null>> {
     try {
-      const products = await this.brandRepository.findProductsByIdAsync(id);
+      const cacheKey = `products_by_brand_${id}`;
+      const cachedProducts = this.cache.get<Brand["products"]>(cacheKey);
+      const products = cachedProducts || (await this.brandRepository.findProductsByIdAsync(id));
+
+      if (!cachedProducts) {
+        this.cache.set(cacheKey, products);
+      }
+
       if (!products) {
         return ServiceResponse.failure("Products not found", null, StatusCodes.NOT_FOUND);
       }
       const uniqueProducts = new Set(products);
-      return ServiceResponse.success<Brand['products']>("Products found", Array.from(uniqueProducts));
+      return ServiceResponse.success<Brand["products"]>("Products found", Array.from(uniqueProducts));
     } catch (ex) {
       const errorMessage = `Error finding products with id ${id}:, ${(ex as Error).message}`;
       logger.error(errorMessage);
-      return ServiceResponse.failure("An error occurred while finding products.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+      return ServiceResponse.failure(
+        "An error occurred while finding products.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-  async findStoresByBrandId(id: string): Promise<ServiceResponse<Brand['stores'] | null>> {
+  async findStoresByBrandId(id: string): Promise<ServiceResponse<Brand["stores"] | null>> {
     try {
-      const stores = await this.brandRepository.findStoresByIdAsync(id);
+      const cacheKey = `stores_by_brand_${id}`;
+      const cachedStores = this.cache.get<Brand["stores"]>(cacheKey);
+      const stores = cachedStores || (await this.brandRepository.findStoresByIdAsync(id));
+
+      if (!cachedStores) {
+        this.cache.set(cacheKey, stores);
+      }
+
       if (!stores) {
         return ServiceResponse.failure("Stores not found", null, StatusCodes.NOT_FOUND);
       }
       const uniqueStores = new Set(stores);
-      return ServiceResponse.success<Brand['stores']>("Stores found", Array.from(uniqueStores));
+      return ServiceResponse.success<Brand["stores"]>("Stores found", Array.from(uniqueStores));
     } catch (ex) {
       const errorMessage = `Error finding stores with id ${id}:, ${(ex as Error).message}`;
       logger.error(errorMessage);
-      return ServiceResponse.failure("An error occurred while finding stores.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+      return ServiceResponse.failure(
+        "An error occurred while finding stores.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
-
-  async findStoresByProductId(id: string): Promise<ServiceResponse<Brand['stores'] | null>> {
+  async findStoresByProductId(id: string): Promise<ServiceResponse<Brand["stores"] | null>> {
     try {
-      const stores = await this.brandRepository.findStoresByProductIDAsync(id);
+      const cacheKey = `stores_by_product_${id}`;
+      const cachedStores = this.cache.get<Brand["stores"]>(cacheKey);
+      const stores = cachedStores || (await this.brandRepository.findStoresByProductIDAsync(id));
+
+      if (!cachedStores) {
+        this.cache.set(cacheKey, stores);
+      }
+
       if (!stores) {
         return ServiceResponse.failure("Stores not found", null, StatusCodes.NOT_FOUND);
       }
       const uniqueStores = new Set(stores);
-      return ServiceResponse.success<Brand['stores']>("Stores found", Array.from(uniqueStores));
+      return ServiceResponse.success<Brand["stores"]>("Stores found", Array.from(uniqueStores));
     } catch (ex) {
       const errorMessage = `Error finding stores with id ${id}:, ${(ex as Error).message}`;
       logger.error(errorMessage);
-      return ServiceResponse.failure("An error occurred while finding stores.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+      return ServiceResponse.failure(
+        "An error occurred while finding stores.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
