@@ -1,6 +1,5 @@
 import type { Brand } from "@/api/brands/brandModel";
 
-// store in Redis or other cache
 export const { data: brands }: { data: Brand[] } = require('./brands.json');
 
 export class BrandRepository {
@@ -9,18 +8,22 @@ export class BrandRepository {
   }
 
   async findByIdAsync(id: Brand['id']): Promise<Brand | null> {
-    return brands.find((brand) => brand.id === id) || null;
+    const brand = brands.find((brand) => brand.id === id);
+    return brand || null;
   }
 
   async findProductsByIdAsync(id: Brand['id']): Promise<Brand['products'] | null> {
-    const brand = brands.find((brand) => brand.id === id)
-    const products = new Set(brand?.products.concat(brand?.consolidated_products));
-    return products.size > 0 ? Array.from(products) : null;
+    const brand = brands.find((brand) => brand.id === id);
+    if (!brand || (brand.products.length === 0 && brand.consolidated_products.length === 0)) {
+      return null;
+    }
+
+    return brand.products.concat(brand.consolidated_products);
   }
 
   async findStoresByIdAsync(id: Brand['id']): Promise<Brand['stores'] | null> {
-    const brand = brands.find((brand) => brand.id === id)
-    return (brand && brand.stores.length > 0) ? brand.stores : null;
+    const brand = brands.find((brand) => brand.id === id);
+    return brand && brand.stores.length > 0 ? brand.stores : null;
   }
 
   async findStoresByProductIDAsync(productId: string): Promise<Brand['stores'] | null> {

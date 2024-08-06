@@ -40,6 +40,15 @@ brandRegistry.registerPath({
 });
 brandRouter.get("/:id/stores", validateRequest(GetStoresByProductIDSchema), brandController.getStoresByBrandID);
 
+brandRegistry.registerPath({
+  method: "get",
+  path: "/brands/{id}/products",
+  tags: ["Brands"],
+  request: { params: GetStoresByProductIDSchema.shape.params },
+  responses: createApiResponse(BrandSchema.shape.stores, "Success"),
+});
+brandRouter.get("/:id/products", validateRequest(GetStoresByProductIDSchema), brandController.getProductsByBrandID);
+
 // TODO: put this in a separate router rather than prefixing it with /brands
 brandRegistry.registerPath({
   method: "get",

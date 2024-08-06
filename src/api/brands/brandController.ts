@@ -14,6 +14,11 @@ class BrandController {
     return handleServiceResponse(serviceResponse, res);
   };
 
+  public getProductsByBrandID: RequestHandler = async (req: Request, res: Response) => {
+    const serviceResponse = await brandService.findProductsByBrandId(req.params.id);
+    return handleServiceResponse(serviceResponse, res);
+  };
+
   public getStoresByBrandID: RequestHandler = async (req: Request, res: Response) => {
     const serviceResponse = await brandService.findStoresByBrandId(req.params.id);
     return handleServiceResponse(serviceResponse, res);
