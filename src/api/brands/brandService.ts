@@ -4,6 +4,7 @@ import NodeCache from "node-cache";
 import type { Brand } from "@/api/brands/brandModel";
 import { BrandRepository } from "@/api/brands/brandRepository";
 import { ServiceResponse } from "@/common/models/serviceResponse";
+import { env } from "@/common/utils/envConfig";
 import { logger } from "@/server";
 
 export class BrandService {
@@ -12,7 +13,7 @@ export class BrandService {
 
   constructor(
     repository: BrandRepository = new BrandRepository(),
-    cache: NodeCache = new NodeCache({ stdTTL: 100, checkperiod: 120 }),
+    cache: NodeCache = new NodeCache({ stdTTL: env.CACHE_TTL || 100, checkperiod: 120 }),
   ) {
     this.brandRepository = repository;
     this.cache = cache;
