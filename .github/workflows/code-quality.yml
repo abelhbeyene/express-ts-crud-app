@@ -2,10 +2,9 @@ name: Code Quality
 
 on:
   push:
-    # TODO - update
-    branches: ["dont-run"]
+    branches: ["main"]
   pull_request:
-    branches: ["dont-run"]
+    branches: ["main"]
 
 jobs:
   quality:

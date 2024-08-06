@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: ["dont-run"]
+    branches: ["main"]
   pull_request:
-    branches: ["dont-run"]
+    branches: ["main"]
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
 
       # Login step only executed for pushes to main
       - name: Login to GitHub Container Registry
-        if: github.ref == 'refs/heads/dont-run'
+        if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -26,13 +26,13 @@ jobs:
       - name: Build the Docker image
         run: |
           docker build . --file Dockerfile --tag ghcr.io/${{ github.repository }}:${{ github.sha }}
-          if [ "${{ github.ref }}" == "refs/heads/dont-run" ]; then
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             docker tag ghcr.io/${{ github.repository }}:${{ github.sha }} ghcr.io/${{ github.repository }}:latest
           fi
 
       # Push the production Docker image
       - name: Push the Docker image
-        if: github.ref == 'refs/heads/dont-run'
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker push ghcr.io/${{ github.repository }}:latest
