@@ -16,7 +16,15 @@ The most performance intensive work in this app is reading the brand data and it
 
 
 ## To run the app
-- `npm i`
+- Add .env file: `cp ./env.template ./.env`
+- Install dependencies: `npm i`
 - To run in dev mode: `npm run dev`
 - To run in production mode: `npm run build && npm run start`
 - To run in Docker: `docker build . -t huggg && docker run -d -p 8081:8080 huggg`
+- Too run tests: `npm run test`
+
+The app will start on http://localhost:8080/ and you can use the Swagger UI to test the requests/responses.
+Here is a Brand ID that you can use for testing: 
+```
+26f7a82a-30a8-44e4-93cb-499a256d0ce9
+```
