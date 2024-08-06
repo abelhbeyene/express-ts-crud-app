@@ -46,6 +46,22 @@ export class BrandService {
     }
   }
 
+  async findStoresByBrandId(id: string): Promise<ServiceResponse<Brand['stores'] | null>> {
+    try {
+      const stores = await this.brandRepository.findStoresByIdAsync(id);
+      if (!stores) {
+        return ServiceResponse.failure("Stores not found", null, StatusCodes.NOT_FOUND);
+      }
+      const uniqueStores = new Set(stores);
+      return ServiceResponse.success<Brand['stores']>("Stores found", Array.from(uniqueStores));
+    } catch (ex) {
+      const errorMessage = `Error finding stores with id ${id}:, ${(ex as Error).message}`;
+      logger.error(errorMessage);
+      return ServiceResponse.failure("An error occurred while finding stores.", null, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
   async findStoresByProductId(id: string): Promise<ServiceResponse<Brand['stores'] | null>> {
     try {
       const stores = await this.brandRepository.findStoresByProductIDAsync(id);

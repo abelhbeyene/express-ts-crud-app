@@ -20,7 +20,7 @@ export class BrandRepository {
 
   async findStoresByIdAsync(id: Brand['id']): Promise<Brand['stores'] | null> {
     const brand = brands.find((brand) => brand.id === id)
-    return brand?.stores || null;
+    return (brand && brand.stores.length > 0) ? brand.stores : null;
   }
 
   async findStoresByProductIDAsync(productId: string): Promise<Brand['stores'] | null> {
