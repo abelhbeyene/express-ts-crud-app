@@ -1,6 +1,6 @@
 ## Overview
 
-This project is built using [express-typescript boilerplate](https://github.com/edwinhern/express-typescript-2024/). The boilerplate has best practices in place such as logging, error handling, rate limiting, OpenAPI spec, unit testing and standarised separation of concerns in the codebase which makes it scalable/maintainable.
+This project is built using [express-typescript boilerplate](https://github.com/edwinhern/express-typescript-2024/). The boilerplate has best practices in place such as logging, error handling, rate limiting, OpenAPI spec, unit testing, zod validation and standarised separation of concerns in the codebase which makes it scalable/maintainable.
 
 The app comprises of multiple endpoints which are documented on the homepage (swagger): http://localhost:8080/
 - /brands/:id
